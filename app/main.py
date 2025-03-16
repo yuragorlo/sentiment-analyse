@@ -11,7 +11,7 @@ logger = get_logger()
 make_cache_dir()
 
 app = FastAPI(
-    title="Enhanced Text Analysis API",
+    title="Text Analysis API",
     description="An API for text analysis using ML and LLM models",
     version="1.0.0",
 )
@@ -20,7 +20,7 @@ app.include_router(api_router, prefix="/api")
 @app.get("/")
 async def root():
     """Root endpoint to check if the API is running."""
-    return {"message": "Welcome to the Enhanced Text Analysis API!"}
+    return {"message": "Welcome to the Text Analysis API!"}
 
 @app.get("/health")
 async def health_check():

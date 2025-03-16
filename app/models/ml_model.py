@@ -32,6 +32,7 @@ class MLModel:
                     self.vectorizer = model_data['vectorizer']
                     self.model = model_data['model']
                     self.loaded = True
+                    logger.debug(f"Loaded model from {model_path=} successfully")
                     return True
             except (pickle.PickleError, IOError, KeyError) as e:
                 logger.error(f"Error loading model: {e}")
@@ -46,9 +47,20 @@ class MLModel:
             texts = df['text'].tolist()
             labels = df['sentiment'].tolist()
 
-            self.vectorizer = TfidfVectorizer(max_features=5000)
+            self.vectorizer = TfidfVectorizer(
+                max_features=5000,       # Limits vocabulary to top 5000 most frequent terms
+                min_df=2,                # Ignores terms appearing in fewer than 2 documents, removing noise
+                max_df=0.9               # Ignores terms appearing in more than 90% of documents, removing common words
+
+            )
             X = self.vectorizer.fit_transform(texts)
-            self.model = LogisticRegression(max_iter=1000, C=1.0, class_weight='balanced')
+            self.model = LogisticRegression(
+                max_iter=3000,           # Maximum iterations for solver to converge
+                C=1.0,                   # Inverse regularization strength
+                class_weight='balanced', # Handling class imbalance
+                solver='saga',           # Optimization algorithm optimized for large datasets with L1 penalty
+                penalty='l1'             # L1 regularization promotes sparsity, for implicit feature selection
+            )
             self.model.fit(X, labels)
 
             model_data = {'vectorizer': self.vectorizer, 'model': self.model}
@@ -58,6 +70,7 @@ class MLModel:
                 with open(self.model_path, 'wb') as f:
                     pickle.dump(model_data, f)
                 self.loaded = True
+                logger.debug(f"Model was trained and saved to {self.model_path=} successfully")
             except IOError as e:
                 logger.error(f"Error saving model: {e}")
                 self.loaded = True
@@ -75,8 +88,9 @@ class MLModel:
         sentiment = self.model.predict(X)[0]
         probs = self.model.predict_proba(X)[0]
         confidence = max(probs)
-
-        return sentiment, float(confidence)
+        results = sentiment, round(float(confidence), 2)
+        logger.debug(f"Sentiment for {text=} was predicted with {results=}")
+        return results
 
 
 ml_model = MLModel()

@@ -44,7 +44,7 @@ class LLMService:
             )
             content = response.choices[0].message.content
             result = json.loads(content)
-            logger.debug(f"Response from OpenAI API was parsed to {result}")
+            logger.debug(f"Response from OpenAI API for {text=} gated {result=}")
             if "sentiment" not in result or "confidence" not in result:
                 raise ValueError("LLM response missing required fields")
             return result

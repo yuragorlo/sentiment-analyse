@@ -27,14 +27,16 @@ async def predict_sentiment(request: MLAnalysisRequest):
     Predict sentiment of the provided text using a traditional ML model.
     """
     try:
-        cached_response = cache.get("predict", {"text": request.text})
+        input_text = request.text
+        cached_response = cache.get("predict", {"text": input_text})
         if cached_response:
             return JSONResponse(content=cached_response)
 
-        sentiment, confidence = ml_model.predict(request.text)
+        sentiment, confidence = ml_model.predict(input_text)
         response = MLAnalysisResponse(sentiment=sentiment, confidence=confidence)
         response_dict = jsonable_encoder(response)
-        cache.set("predict", {"text": request.text}, response_dict)
+        cache.set("predict", {"text": input_text}, response_dict)
+        logger.info(f"Sentiment for {input_text=} was predicted by ML: {response_dict=}")
         return JSONResponse(content=response_dict)
     
     except Exception as e:
@@ -59,17 +61,19 @@ async def predict_sentiment_llm(request: LLMAnalysisRequest):
     Predict sentiment of the provided text using a Large Language Model.
     """
     try:
-        cached_response = cache.get("predict-llm", {"text": request.text})
+        input_text = request.text
+        cached_response = cache.get("predict-llm", {"text": input_text})
         if cached_response:
             return JSONResponse(content=cached_response)
 
-        result = llm_model.analyze_with_openai(request.text)
+        result = llm_model.analyze_with_openai(input_text)
         response = LLMAnalysisResponse(
             sentiment=result["sentiment"],
             confidence=result["confidence"],
         )
         response_dict = jsonable_encoder(response)
-        cache.set("predict-llm", {"text": request.text}, response_dict)
+        cache.set("predict-llm", {"text": input_text}, response_dict)
+        logger.info(f"Sentiment for {input_text=} was predicted by LLM: {response_dict=}")
         return JSONResponse(content=response_dict)
     
     except Exception as e:
