@@ -7,7 +7,7 @@ def test_root_endpoint():
     """Test the root endpoint."""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome to the Enhanced Text Analysis API!"}
+    assert response.json() == {"message": "Welcome to the Text Analysis API!"}
 
 def test_health_endpoint():
     """Test the health check endpoint."""

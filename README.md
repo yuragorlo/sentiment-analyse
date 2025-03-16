@@ -25,7 +25,7 @@ A Dockerized FastAPI service for text analysis using both traditional machine le
 1. Clone the repository:
    ```bash
    git clone https://github.com/yuragorlo/sentiment-analyse
-   cd enhanced-text-analysis-api
+   cd sentiment-analyse
    ```
 
 2. Create a `.env` file by copying the example:
@@ -123,6 +123,7 @@ Test the LLM model endpoint:
 │   └── main.py
 ├── tests/
 │   ├── __init__.py
+│   ├── hyperparameter_tuning.py
 │   ├── llm_negative_test.sh
 │   ├── llm_positive_test.sh
 │   ├── negative_test.sh
@@ -134,6 +135,7 @@ Test the LLM model endpoint:
 ├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
+├── brief.pdf
 ├── README.md
 └── requirements.txt
 ```
